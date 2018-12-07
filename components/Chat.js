@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View,TextInput,FlatList,TouchableHighlight,KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, Text, View,TextInput,FlatList,
+		Platform,TouchableHighlight,KeyboardAvoidingView } from 'react-native';
 import { Header } from 'react-native-elements'
 export default class chat extends Component {
 	constructor() {
@@ -7,13 +8,21 @@ export default class chat extends Component {
 		this.state = {
 			text: '',
 			disabled:true,
+			messages:[
+					{
+						text:'Hello'
+					},
+					{
+						text:'How are you?'
+					}
+				]
 		}
 	}
 	onTyping(text) {
 		if (text && text.length >= 1) {
 			this.setState({
 				disabled:false,
-				text
+				text:"",
 			})
 		} else {
 			this.setState({
@@ -24,8 +33,18 @@ export default class chat extends Component {
 	onSendBtnPressed() {
 		this.textInput.clear()
 	}
+
+	renderChatItem({item}) {
+		return <Text>{item.text}</Text>
+	}
+
+	keyExtractor = (item,index) => index;
 	render() {
 		const extraBtnStyle = this.state.disabled ? styles.disabledBtn : styles.enabledbtn;
+		let behavior = '';
+		if (Platform.OS == 'ios' || Platform.OS == 'android') {
+			behavior= 'padding'
+		}
 		return (
 			<View style={styles.container}>
 				<Header
@@ -34,9 +53,14 @@ export default class chat extends Component {
 					    backgroundColor: '#EE596C',
 					  }}
 				 />
-				 <FlatList/>
-				 <KeyboardAvoidingView behavior="padding">
-				 <View style={styles.inputBar}>
+				 <FlatList
+				 	inverted
+				 	data={this.state.messages}
+				 	renderItem={this.renderChatItem}
+				 	keyExtractor={this.keyExtractor}
+				 />
+				 <KeyboardAvoidingView behavior={behavior}>
+ 				 <View style={styles.inputBar}>
 				 	<TextInput style={styles.textBox}
 				 		multiline
 				 		defaultHeight={30}
